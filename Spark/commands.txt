@@ -1,0 +1,21 @@
+ssh -i emrlab3.pem hadoop@ec2-100-26-32-112.compute-1.amazonaws.com
+
+spark-shell
+
+var df=spark.read.format("csv").load("s3://emrlab3/dataset/DelayedFlights-updated.csv")
+
+spark.time(df.show())
+
+df.createOrReplaceTempView("delay_flights")
+
+val  result1 = spark.sql("SELECT _c1, _c15, _c25,_c26,_c27, _c28, _c29 from delay_flights").show()
+
+val  result1 = spark.time(spark.sql("SELECT _c1 as Year, avg((_c25/_c15)*100) as year_wise_carrier_delay from delay_flights GROUP BY Year ORDER BY Year DESC").show())
+
+val  result1 = spark.time(spark.sql("SELECT _c1 as Year, avg((_c26/_c15)*100) as year_wise_weather_delay from delay_flights GROUP BY Year ORDER BY Year DESC").show())
+
+val  result1 = spark.time(spark.sql("SELECT _c1 as Year, avg((_c27/_c15)*100) as year_wise_NAS_delay from delay_flights GROUP BY Year ORDER BY Year DESC").show())
+
+val  result1 = spark.time(spark.sql("SELECT _c1 as Year, avg((_c28/_c15)*100) as year_wise_security_delay from delay_flights GROUP BY Year ORDER BY Year DESC").show())
+
+val  result1 = spark.time(spark.sql("SELECT _c1 as Year, avg((_c29/_c15)*100) as year_wise_late_aircraft_delay from delay_flights GROUP BY Year ORDER BY Year DESC").show())

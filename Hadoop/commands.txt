@@ -1,0 +1,55 @@
+ssh -i emrlab3.pem hadoop@ec2-100-26-32-112.compute-1.amazonaws.com
+
+hive
+
+CREATE TABLE IF NOT EXISTS delay_flights (
+  Id INT,
+  Year INT,
+  Month INT,
+  DayofMonth INT,
+  DayOfWeek STRING,
+  DepTime INT,
+  CRSDepTime INT,
+  ArrTime INT,
+  CRSArrTime INT,
+  UniqueCarrier STRING,
+  FlightNum STRING,
+  TailNum STRING,
+  ActualElapsedTime INT,
+  CRSElapsedTime INT,
+  AirTime INT,
+  ArrDelay INT,
+  DepDelay INT,
+  Origin STRING,
+  Dest STRING,
+  Distance INT,
+  TaxiIn INT,
+  TaxiOut INT,
+  Cancelled STRING,
+  CancellationCode STRING,
+  Diverted STRING,
+  CarrierDelay INT,
+  WeatherDelay INT,
+  NASDelay INT,
+  SecurityDelay INT,
+  LateAircraftDelay INT
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY "," LOCATION "s3://emrlab3/hadoop/";
+
+show databases;
+
+show tables;
+
+DESCRIBE delay_flights;
+
+LOAD DATA INPATH 's3://emrlab3/dataset/DelayedFlights-updated.csv' OVERWRITE INTO TABLE delay_flights;
+
+SELECT Year, avg((CarrierDelay/ArrDelay)*100) as year_wise_carrier_delay from delay_flights GROUP BY Year ORDER BY Year DESC;
+
+SELECT Year, avg((WeatherDelay/ArrDelay)*100) as year_wise_weather_delay from delay_flights GROUP BY Year ORDER BY Year DESC;
+
+SELECT Year, avg((NASDelay/ArrDelay)*100) as year_wise_nas_delay from delay_flights GROUP BY Year ORDER BY Year DESC;
+
+SELECT Year, avg((SecurityDelay/ArrDelay)*100) as year_wise_security_delay from delay_flights GROUP BY Year ORDER BY Year DESC;
+
+SELECT Year, avg((LateAircraftDelay/ArrDelay)*100) as year_wise_late_aircraft_delay from delay_flights GROUP BY Year ORDER BY Year DESC;
